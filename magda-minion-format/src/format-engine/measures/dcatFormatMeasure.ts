@@ -7,6 +7,19 @@ import MeasureResult from "./MeasureResult";
 import { SelectedFormat } from "../formats";
 import * as _ from "lodash";
 
+function lookupAlias(format: string) {
+    switch (format) {
+        case "ms excel":
+            return "xlsx";
+        default:
+            return format;
+    }
+}
+
+const FORMATS_WITH_WHITESPACE: { [s: string]: boolean } = {
+    "esri rest": true
+};
+
 // list of functions that clean up the dcat-string so that magda can understand it
 // all functions must be executed in the order they appear in this file
 
@@ -40,12 +53,25 @@ function replaceAmpersandFormats(formats: Array<string>): Array<string> {
 }
 
 /**
+ * standardise well known formats
+ * ['ms excel'] -> ['xlsx']
+ */
+function transormKnownAliases(formats: Array<string>): Array<string> {
+    return _(formats)
+        .flatMap(lookupAlias)
+        .value();
+}
+
+/**
  * split white space separated stuff into an array:
  * ['zip (xlsx)'] -> ['zip', '(xlsx)']
  */
 function splitWhiteSpaceFormats(formats: Array<string>): Array<string> {
     return _(formats)
-        .flatMap((format: string) => format.split(/\s+/g))
+        .flatMap(
+            (format: string) =>
+                FORMATS_WITH_WHITESPACE[format] ? format : format.split(/\s+/g)
+        )
         .value();
 }
 
@@ -141,6 +167,7 @@ export default function getMeasureResult(
     const cleanUpAssemblyChain = [
         foundationalCleanup,
         replaceAmpersandFormats,
+        transormKnownAliases,
         splitWhiteSpaceFormats,
         reduceMimeType,
         filterBracketedFormats
