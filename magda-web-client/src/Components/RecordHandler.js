@@ -217,43 +217,45 @@ class RecordHandler extends React.Component {
                             </span>
                         )}
                         <br />
-                        <a
-                            className="au-btn distribution-download-button"
-                            href={this.props.distribution.downloadURL}
-                            alt="distribution download button"
-                            onClick={() => {
-                                // google analytics download tracking
-                                const resource_url = encodeURIComponent(
-                                    this.props.distribution.downloadURL
-                                );
-                                if (resource_url) {
-                                    // legacy support
-                                    gapi.event({
-                                        category: "Resource",
-                                        action: "Download",
-                                        label: resource_url
-                                    });
-                                    // new events
-                                    gapi.event({
-                                        category: "Download by Dataset",
-                                        action: this.props.dataset.title,
-                                        label: resource_url
-                                    });
-                                    gapi.event({
-                                        category: "Download by Source",
-                                        action: this.props.dataset.source,
-                                        label: resource_url
-                                    });
-                                    gapi.event({
-                                        category: "Download by Publisher",
-                                        action: this.props.dataset,
-                                        label: resource_url
-                                    });
-                                }
-                            }}
-                        >
-                            Download
-                        </a>{" "}
+                        {this.props.distribution.downloadURL ? (
+                            <a
+                                className="au-btn distribution-download-button"
+                                href={this.props.distribution.downloadURL}
+                                alt="distribution download button"
+                                onClick={() => {
+                                    // google analytics download tracking
+                                    const resource_url = encodeURIComponent(
+                                        this.props.distribution.downloadURL
+                                    );
+                                    if (resource_url) {
+                                        // legacy support
+                                        gapi.event({
+                                            category: "Resource",
+                                            action: "Download",
+                                            label: resource_url
+                                        });
+                                        // new events
+                                        gapi.event({
+                                            category: "Download by Dataset",
+                                            action: this.props.dataset.title,
+                                            label: resource_url
+                                        });
+                                        gapi.event({
+                                            category: "Download by Source",
+                                            action: this.props.dataset.source,
+                                            label: resource_url
+                                        });
+                                        gapi.event({
+                                            category: "Download by Publisher",
+                                            action: this.props.dataset,
+                                            label: resource_url
+                                        });
+                                    }
+                                }}
+                            >
+                                Download
+                            </a>
+                        ) : null}{" "}
                         <Small>
                             <DescriptionBox
                                 content={this.props.distribution.description}
@@ -399,14 +401,16 @@ class RecordHandler extends React.Component {
                                             />
                                         </Medium>
                                     </div>
-                                    <div className="quality-rating-box">
-                                        <QualityIndicator
-                                            quality={
-                                                this.props.dataset
-                                                    .linkedDataRating
-                                            }
-                                        />
-                                    </div>
+                                    {this.props.dataset.linkedDataRating && (
+                                        <div className="quality-rating-box">
+                                            <QualityIndicator
+                                                quality={
+                                                    this.props.dataset
+                                                        .linkedDataRating
+                                                }
+                                            />
+                                        </div>
+                                    )}
                                     {this.props.dataset.contactPoint && (
                                         <ContactPoint
                                             contactPoint={
